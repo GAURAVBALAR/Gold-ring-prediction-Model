@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: gold-weight-api
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn -w 4 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:$PORT"
+    envVars:
+      - key: DATABASE_URL
+        value: sqlite+aiosqlite:///./data/gold_weight.db
+      - key: PYTHON_VERSION
+        value: 3.11.0
+      - key: VECTOR_DB_TYPE
+        value: pinecone
+      - key: PINECONE_INDEX_NAME
+        value: ring-designs
+    disk:
+      name: gold-data
+      mountPath: /opt/render/project/src/backend/data
+      sizeGB: 1

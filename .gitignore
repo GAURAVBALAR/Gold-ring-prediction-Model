@@ -1,0 +1,49 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+backend/.env
+
+# Node
+node_modules/
+dist/
+.vercel/
+
+# Data & DB
+backend/data/
+data/chroma_db/
+*.db
+*.db-shm
+*.db-wal
+
+# Images
+Tanishq_Jewelry_Dataset_Final/images/
+*.jpg
+*.png
+*.jpeg
+
+# Large datasets
+master_dataset.csv
+*.csv
+
+# Secrets / env files
+.env*
+!.env.example
+frontend/.env.production
+pinecone_key.txt
+
+# ML model artifacts
+*.pkl
+*.joblib
+*.model
+
+# Scratch / temp scripts
+scratch_*.py
+
+# System
+.DS_Store
+Thumbs.db
+
+# Zip artifacts
+*.zip

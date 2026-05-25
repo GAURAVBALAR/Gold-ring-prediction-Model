@@ -1,0 +1,99 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "resource": "image",
+        "operation": "analyze",
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-3.1-pro-preview",
+          "mode": "list",
+          "cachedResultName": "models/gemini-3.1-pro-preview"
+        },
+        "text": "Act as an expert Jewelry CAD Designer and Master Metallurgist. I am providing you with a 2D render and a specification sheet for a ring. Your task is to carefully analyze the visual proportions of the ring, combine them with the provided specifications, estimate the 3D CAD volume of the metal in cubic millimeters (mm3), and calculate the final gold weight. \n\nYou must not make blind guesses. You must calculate this step-by-step using geometric approximations. \n\nStep 1: Analyze the Specs\nExtract the ring size, center stone dimensions, center stone carat, side stone carat, and side stone count from the provided image text.\n\nStep 2: Visual Dimension Extraction\nLook carefully at the image and estimate the missing dimensions in millimeters (Band Width, Band Thickness, and Prong/Head dimensions).\n\nStep 3: Geometric Volume Breakdown\nMentally calculate the volume for:\n1. The Shank: Unrolled band volume assuming a D-shape profile (multiply bounding box by 0.8).\n2. The Head: Bounding box volume of the prong setting minus the center diamond volume.\n3. The Holes: Volume of metal drilled out for the side stones.\n\nStep 4: Weight Calculation\nCalculate the final weight for both 14K and 18K Yellow Gold using the following formulas:\n* 14K Weight = (Volume * 13.07) / 1000\n* 18K Weight = (Volume * 15.58) / 1000\n\nOutput Formatting:\nYou must return ONLY a valid JSON object. Do not include any conversational text or markdown formatting (like ```json) outside of the JSON structure. Use exactly 3 decimal places (0.000) for the numerical values. \n\nUse this exact JSON schema:\n{\n  \"reasoning_and_math\": \"Write out your step-by-step geometric calculations, dimension estimates, and logic here.\",\n  \"volume_mm3\": 0.000,\n  \"weight_14k_g\": 0.000,\n  \"weight_18k_g\": 0.000\n}",
+        "inputType": "binary",
+        "binaryPropertyName": "scds",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        208,
+        0
+      ],
+      "id": "6ae8b1b2-86b9-44fe-a609-ca6a95010c0f",
+      "name": "Analyze an image",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "6YhqNgNBHB0zp0Om",
+          "name": "Joyspoon"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "formTitle": "jsdhbcdws",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "scds",
+              "fieldType": "file"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.formTrigger",
+      "typeVersion": 2.5,
+      "position": [
+        -32,
+        0
+      ],
+      "id": "17469296-c3f1-4e29-8c39-68175b34a9c4",
+      "name": "On form submission",
+      "webhookId": "b0d2453d-fa22-4f43-93a9-d6b386e8fb71"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Loop over all input items\nlet results = [];\n\nfor (const item of $input.all()) {\n  \n  // Grab the raw output from the AI. \n  // ⚠️ CHANGE 'text' to whatever field your AI output is actually stored in!\n  // E.g., item.json.message.content (for OpenAI) or item.json.output (for others)\n  let rawAiOutput = $input.first().json.content.parts[0].text || \"\";\n\n  // AIs love to disobey the \"no markdown\" rule. Let's scrub the backticks and \"json\" text.\n  let cleanedText = rawAiOutput\n    .replace(/^```json/mi, '') // Removes ```json at the start\n    .replace(/^```/mi, '')     // Removes ``` at the start if it forgot 'json'\n    .replace(/```$/mi, '')     // Removes ``` at the end\n    .trim();                   // Cleans up any leftover whitespace\n\n  try {\n    // Convert the cleaned string into a proper JavaScript Object\n    let parsedData = JSON.parse(cleanedText);\n    \n    // Pass the parsed object forward as the new item data\n    results.push({ json: parsedData });\n    \n  } catch (error) {\n    // If the AI completely hallucinates and ruins the JSON, catch the error \n    // so the workflow doesn't completely crash and burn.\n    results.push({ \n      json: { \n        error: \"JSON Parsing Failed!\", \n        reason: error.message,\n        raw_output: rawAiOutput \n      } \n    });\n  }\n}\n\nreturn results;"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        0
+      ],
+      "id": "6e7a9901-4798-4ebe-81c6-dad2e416e4e3",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "connections": {
+    "Analyze an image": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "On form submission": {
+      "main": [
+        [
+          {
+            "node": "Analyze an image",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "6c117294c561256781e273716b2dd9fec5b63fca097f0770dfa6acd6dddd1ee8"
+  }
+}
