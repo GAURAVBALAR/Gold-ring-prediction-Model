@@ -28,11 +28,11 @@ services:
       sizeGB: 1
 
   # 2. Frontend Static Site Service
-  - type: static
+  - type: web
     name: gold-weight-frontend
     env: static
     buildCommand: "npm install && npm run build"
-    publishPath: dist
+    staticPublishPath: dist
     rootDir: frontend
     envVars:
       - key: VITE_API_URL
