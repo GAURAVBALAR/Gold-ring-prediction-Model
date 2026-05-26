@@ -13,8 +13,8 @@ google-genai==0.1.0
 gunicorn==23.0.0
 numpy>=2.1.0
 # Optional: Install torch and open-clip-torch for local CLIP embeddings
-torch --index-url https://download.pytorch.org/whl/cpu
-open-clip-torch==2.26.1
+# torch --index-url https://download.pytorch.org/whl/cpu
+# open-clip-torch==2.26.1
 pillow==10.4.0
 pinecone==6.0.0
 
