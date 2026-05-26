@@ -3,7 +3,7 @@ services:
   - type: web
     name: gold-weight-api
     env: python
-    plan: starter
+    plan: free
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn -w 2 -k uvicorn.workers.UvicornWorker app.main:app --bind 0.0.0.0:$PORT --timeout 120"
     rootDir: backend
@@ -22,10 +22,6 @@ services:
         sync: false
       - key: GEMINI_API_KEY
         sync: false
-    disk:
-      name: gold-data
-      mountPath: /opt/render/project/src/backend/data
-      sizeGB: 1
 
   # 2. Frontend Static Site Service
   - type: web
